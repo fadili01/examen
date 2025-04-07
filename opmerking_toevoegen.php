@@ -2,44 +2,30 @@
 include_once '../lessen/Les.php';
 
 $lesObj = new Les();
-$instructeurId = 5; // Dit moet dynamisch komen, bijv. uit sessie of URL
+$leerlingId = 1; // Dit zou uit de sessie komen, bijvoorbeeld: $_SESSION['leerling_id'];
 
-$lessen = $lesObj->getLessenVoorInstructeur($instructeurId);
+$lessen = $lesObj->getLessenVoorLeerling($leerlingId);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lesId = $_POST['les_id'];
     $opmerking = $_POST['opmerking'];
 
-    if ($lesObj->voegOpmerkingToe($lesId, $opmerking)) {
+    if ($lesObj->voegOpmerkingToe($lesId, $opmerking, $leerlingId)) {
         echo "Opmerking toegevoegd!";
     } else {
-        echo "Fout bij toevoegen.";
+        echo "Fout bij toevoegen. Zorg ervoor dat je de opmerking voor een gekoppelde les toevoegt.";
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-<h2>Les Opmerkingen Toevoegen</h2>
+<h2>Opmerking Toevoegen</h2>
 
 <form method="POST">
-    <label for="les_id">Kies een leerling:</label>
+    <label for="les_id">Kies een les:</label>
     <select name="les_id" required>
-        <?php if (empty($lessen)): ?>
-            <option disabled>Geen lessen gevonden voor deze instructeur.</option>
-        <?php else: ?>
-            <?php foreach ($lessen as $les): ?>
-                <option value="<?php echo $les['id']; ?>">
-                    <?php echo $les['leerling_naam']; ?> - <?php echo $les['datum']; ?> - <?php echo $les['tijd']; ?>
-                </option>
-            <?php endforeach; ?>
-        <?php endif; ?>
+        <?php foreach ($lessen as $les): ?>
+            <option value="<?php echo $les['id']; ?>"><?php echo $les['datum']; ?> - <?php echo $les['tijd']; ?></option>
+        <?php endforeach; ?>
     </select><br>
 
     <label for="opmerking">Opmerking:</label>
@@ -47,5 +33,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <button type="submit">Opmerking Toevoegen</button>
 </form>
-</body>
-</html>
